@@ -20,6 +20,9 @@ if(isset($_GET["disconnect"])){
     <div class = "link" >
         <a href = "print.php">Question a</a>
     </div>
+    <div class = "link" >
+        <a href = "add.php">Question b</a>
+    </div>
 </div>
 </body>
 </html>

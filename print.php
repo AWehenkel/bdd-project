@@ -18,7 +18,7 @@
 </head>
 <script>
     function update_query(value){
-        if(value == "Selectionner la table")
+        if(value == "")
             return;
         var xhttp = new XMLHttpRequest();
         xhttp.open("GET", "db_requester.php?action=0&table="+value, true);

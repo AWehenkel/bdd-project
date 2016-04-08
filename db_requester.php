@@ -29,7 +29,7 @@ class db_requester {
     function list_table_select($name, $script){
         $query = "SHOW TABLES";
         $result = $this->bdd_query($query);
-        $table_select = "<select onchange = '".$script."(this.value);' id = '".$name."' name = '".$name."'><option>Selectionner la table</option>";
+        $table_select = "<select onchange = '".$script."(this.value);' id = '".$name."' name = '".$name."'><option></option>";
         while($table = $result->fetch_row()){
             $table_select .= "<option value='".$table[0]."'>".$table[0]."</option>";
         }
@@ -81,10 +81,32 @@ class db_requester {
         echo "</table>";
 
     }
+
+    function list_select($table, $champ, $name, $script = "", $cond = ""){
+        $query = "SELECT DISTINCT ".$champ." FROM ".$table." ".$cond;
+        $result = $this->bdd_query($query);
+        $ret = "";
+        if($result){
+            $ret .= "<select onchange = '".$script."' name = ".$name."><option></option>";
+            while($champ = $result->fetch_row())
+                $ret .= "<option>".$champ[0]."</option>";
+            $ret .= "</select>";
+        }
+        return $ret;
+    }
+
+
+    function isInTable($val, $table, $champ){
+        $query = "SELECT * FROM ".$table." WHERE ".$champ." = '".$val;
+        $result = $this->bdd_query($query);
+        return ($result->num_rows > 0);
+    }
 }
 
 if(isset($_GET['action'])){
     $bdd = new db_requester();
+    //foreach($_GET as $val)
+      //  echo $val." ";
     switch(htmlspecialchars($_GET['action'])){
         case 0:
             if(isset($_GET['table']))
@@ -97,6 +119,12 @@ if(isset($_GET['action'])){
                 echo $bdd->print_table(htmlspecialchars($_GET['table']));
             else
                 echo "Bad request";
+            break;
+        case 2://It is a list_select_requesttable=jeu_video&champ=id&cond=WHERE style = "+val
+            if(isset($_GET["table"]) && isset($_GET["champ"]) && isset($_GET["name"]) && isset($_GET["script"]) && isset($_GET["cond"]))
+                echo $bdd->list_select(htmlspecialchars($_GET["table"]), htmlspecialchars($_GET["champ"]), htmlspecialchars($_GET["name"]), htmlspecialchars($_GET["script"]), htmlspecialchars($_GET["cond"]));
+            break;
+        case 3://It needs to check if physique ou virtuel
             break;
         default:
             echo "pas cool";
