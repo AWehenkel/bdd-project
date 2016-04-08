@@ -32,6 +32,22 @@ body{
 html{
     height: 100%;
 }
+.link{
+    text-align: center;
+    background-color: rgba(245, 222, 179, 0.59);
+    font-size: 1.5em;
+    padding: 10px;
+    border: solid 2px black;
+    border-radius: 3px;
+}
+.link:hover{
+    background-color: rgba(245, 222, 179, 0.69);
+}
+.menu{
+    margin: auto;
+    width: 300px;
+    margin-top: 50px;
+}
 .menu-selection{
     width: 50%;
     position: inherit;
@@ -41,6 +57,7 @@ html{
     border-radius: 5px;
     border: solid 1px black;
     color: white;
+    display: table;
 }
 .result-box{
     width: 50%;
@@ -52,7 +69,23 @@ html{
     border-radius: 5px;
     border: solid 1px black;
     color: white;
+    height: 450px;
+    overflow: scroll;
 }
 h2{
     text-align: center;
+}
+.result_table{
+    width: 100%;
+    text-align: center;
+}
+.left{
+    float: left;
+    width: 45%;
+    /* display: inline; */
+    position: initial;
+}
+.right{
+    float: right;
+    display: inline;
 }
