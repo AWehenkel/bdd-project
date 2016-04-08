@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - bdd_projet@127.0.0.1" uuid="509c3e06-5873-43e5-aa00-72fd914884eb">
+    <database-info product="MySQL" version="5.5.5-10.1.10-MariaDB" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
+    <schema name="" catalog="bdd_projet"/>
+    <table name="ami" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_ami" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="nom" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="prenom" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="n_tel" sqlType="VARCHAR" precision="9" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="id_ami"/>
+    </table>
+    <table name="console" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_plateforme"/>
+      <foreign-key name="console_ibfk_1" columns="id_plateforme" ref-table="plateforme" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_plateforme" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="emulateur" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_emulateur" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="nom" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="version" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_emulateur"/>
+      <exported-key name="emulateur_fonctionne_sur_ibfk_2" table="emulateur_fonctionne_sur" schema="" catalog="bdd_projet" columns="id_emulateur"/>
+      <exported-key name="emule_ibfk_2" table="emule" schema="" catalog="bdd_projet" columns="id_emulateur"/>
+      <exported-key name="peut_emuler_ibfk_3" table="peut_emuler" schema="" catalog="bdd_projet" columns="id_emulateur"/>
+    </table>
+    <table name="emulateur_fonctionne_sur" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_emulateur" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_emulateur,id_plateforme"/>
+      <foreign-key name="emulateur_fonctionne_sur_ibfk_1" columns="id_plateforme" ref-table="plateforme" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_plateforme" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="emulateur_fonctionne_sur_ibfk_2" columns="id_emulateur" ref-table="emulateur" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_emulateur" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="emule" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_emulateur" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_emulateur,id_plateforme"/>
+      <foreign-key name="emule_ibfk_1" columns="id_plateforme" ref-table="plateforme" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_plateforme" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="emule_ibfk_2" columns="id_emulateur" ref-table="emulateur" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_emulateur" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="exemplaire" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_exemplaire" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_jeu,id_exemplaire"/>
+      <foreign-key name="exemplaire_ibfk_1" columns="id_jeu" ref-table="jeu_vidéo" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_jeu" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="exemplaire_ibfk_2" columns="id_plateforme" ref-table="plateforme" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_plateforme" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="peut_emuler_ibfk_1" table="peut_emuler" schema="" catalog="bdd_projet" columns="id_exemplaire"/>
+      <exported-key name="prêt_ibfk_2" table="prêt" schema="" catalog="bdd_projet" columns="id_exemplaire"/>
+      <index name="id_exemplaire" unique="false" columns="id_exemplaire"/>
+    </table>
+    <table name="exemplaire_physique" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_exemplaire" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="etat" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="emballage" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <column name="livret" sqlType="TINYINT" precision="3" scale="0" nullable="false" jdbcType="-6"/>
+      <primary-key name="PRIMARY" columns="id_jeu,id_exemplaire"/>
+      <foreign-key name="exemplaire_physique_ibfk_1" columns="id_jeu" ref-table="jeu_vidéo" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_jeu" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="exemplaire_virtuel" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_exemplaire" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="taille" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_jeu,id_exemplaire"/>
+      <foreign-key name="exemplaire_virtuel_ibfk_1" columns="id_jeu" ref-table="jeu_vidéo" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_jeu" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="jeu_vidéo" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="style" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="note" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_jeu"/>
+      <exported-key name="exemplaire_ibfk_1" table="exemplaire" schema="" catalog="bdd_projet" columns="id_jeu"/>
+      <exported-key name="exemplaire_physique_ibfk_1" table="exemplaire_physique" schema="" catalog="bdd_projet" columns="id_jeu"/>
+      <exported-key name="exemplaire_virtuel_ibfk_1" table="exemplaire_virtuel" schema="" catalog="bdd_projet" columns="id_jeu"/>
+      <exported-key name="peut_emuler_ibfk_2" table="peut_emuler" schema="" catalog="bdd_projet" columns="id_jeu"/>
+      <exported-key name="plateforme_du_jeu_ibfk_2" table="plateforme_du_jeu" schema="" catalog="bdd_projet" columns="id_jeu"/>
+      <exported-key name="prêt_ibfk_1" table="prêt" schema="" catalog="bdd_projet" columns="id_jeu"/>
+    </table>
+    <table name="peut_emuler" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_exemplaire" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_emulateur" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_jeu,id_exemplaire,id_emulateur"/>
+      <foreign-key name="peut_emuler_ibfk_1" columns="id_exemplaire" ref-table="exemplaire" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_exemplaire" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="peut_emuler_ibfk_2" columns="id_jeu" ref-table="jeu_vidéo" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_jeu" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="peut_emuler_ibfk_3" columns="id_emulateur" ref-table="emulateur" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_emulateur" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="plateforme" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="nom" sqlType="VARCHAR" precision="20" scale="0" nullable="false" jdbcType="12"/>
+      <column name="version" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="bits" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_plateforme"/>
+      <exported-key name="console_ibfk_1" table="console" schema="" catalog="bdd_projet" columns="id_plateforme"/>
+      <exported-key name="emulateur_fonctionne_sur_ibfk_1" table="emulateur_fonctionne_sur" schema="" catalog="bdd_projet" columns="id_plateforme"/>
+      <exported-key name="emule_ibfk_1" table="emule" schema="" catalog="bdd_projet" columns="id_plateforme"/>
+      <exported-key name="exemplaire_ibfk_2" table="exemplaire" schema="" catalog="bdd_projet" columns="id_plateforme"/>
+      <exported-key name="plateforme_du_jeu_ibfk_1" table="plateforme_du_jeu" schema="" catalog="bdd_projet" columns="id_plateforme"/>
+      <exported-key name="système_ibfk_1" table="système" schema="" catalog="bdd_projet" columns="id_plateforme"/>
+    </table>
+    <table name="plateforme_du_jeu" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_jeu,id_plateforme"/>
+      <foreign-key name="plateforme_du_jeu_ibfk_1" columns="id_plateforme" ref-table="plateforme" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_plateforme" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="plateforme_du_jeu_ibfk_2" columns="id_jeu" ref-table="jeu_vidéo" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_jeu" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="prêt" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_ami" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_jeu" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="id_exemplaire" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="date_emprunt" sqlType="DATE" precision="10" scale="0" nullable="false" jdbcType="91"/>
+      <column name="date_retour" sqlType="DATE" precision="10" scale="0" nullable="false" jdbcType="91"/>
+      <primary-key name="PRIMARY" columns="id_jeu,id_exemplaire,date_emprunt"/>
+      <foreign-key name="prêt_ibfk_1" columns="id_jeu" ref-table="jeu_vidéo" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_jeu" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="prêt_ibfk_2" columns="id_exemplaire" ref-table="exemplaire" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_exemplaire" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="système" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id_plateforme" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="id_plateforme"/>
+      <foreign-key name="système_ibfk_1" columns="id_plateforme" ref-table="plateforme" ref-schema="" ref-catalog="bdd_projet" ref-columns="id_plateforme" update-rule="3" delete-rule="3" deferrability="2"/>
+    </table>
+    <table name="users" schema="" catalog="bdd_projet" type="TABLE">
+      <column name="id" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="password" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+    </table>
+  </data-source>
+</component>

@@ -1,0 +1,58 @@
+.little-box {
+    width: 350px;
+    border: black solid 1px;
+    padding: 10px;
+    text-align: center;
+    top:200px;
+    position: relative;
+    margin:auto;
+    border-radius: 3px;
+    background-color: darkcyan;
+    color: antiquewhite;
+}
+body{
+    background-image: url("jeu.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.center{
+    width: 100%;
+}
+.submit{
+    border-radius: 3px;
+    border: 1px solid white;
+    padding: 3px 7px 3px 7px;
+    background-color: azure;
+    color: darkcyan;
+    cursor: pointer;
+}
+.submit:hover{
+    border: 1px solid black;
+}
+html{
+    height: 100%;
+}
+.menu-selection{
+    width: 50%;
+    position: inherit;
+    background-color: rgba(158, 158, 158, 0.6);
+    margin: auto;
+    padding: 5px;
+    border-radius: 5px;
+    border: solid 1px black;
+    color: white;
+}
+.result-box{
+    width: 50%;
+    position: inherit;
+    background-color: rgba(158, 158, 158, 0.6);
+    margin: auto;
+    margin-top: 50px;
+    padding: 5px;
+    border-radius: 5px;
+    border: solid 1px black;
+    color: white;
+}
+h2{
+    text-align: center;
+}
