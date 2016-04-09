@@ -12,7 +12,7 @@ class db_requester {
     }
 
     function bdd_query($query){
-        $bdd = mysqli_connect("localhost", "root", "", "bdd_projet");
+        $bdd = mysqli_connect("localhost", "group8", "IR5ovtPs", "bdd_projet");
         $result = $bdd->query($query);
         $bdd->close();
         return $result;
@@ -85,6 +85,7 @@ class db_requester {
     function list_select($table, $champ, $name, $script = "", $cond = ""){
         $query = "SELECT DISTINCT ".$champ." FROM ".$table." ".$cond;
         $result = $this->bdd_query($query);
+        echo $query;
         $ret = "";
         if($result){
             $ret .= "<select onchange = '".$script."' name = ".$name."><option></option>";
@@ -96,8 +97,8 @@ class db_requester {
     }
 
 
-    function isInTable($val, $table, $champ){
-        $query = "SELECT * FROM ".$table." WHERE ".$champ." = '".$val;
+    function isInTable($table, $champ, $val){
+        $query = "SELECT * FROM ".$table." WHERE ".$champ." = ".$val;
         $result = $this->bdd_query($query);
         return ($result->num_rows > 0);
     }
@@ -106,7 +107,7 @@ class db_requester {
 if(isset($_GET['action'])){
     $bdd = new db_requester();
     //foreach($_GET as $val)
-      //  echo $val." ";
+        //echo $val." ";
     switch(htmlspecialchars($_GET['action'])){
         case 0:
             if(isset($_GET['table']))
@@ -124,7 +125,12 @@ if(isset($_GET['action'])){
             if(isset($_GET["table"]) && isset($_GET["champ"]) && isset($_GET["name"]) && isset($_GET["script"]) && isset($_GET["cond"]))
                 echo $bdd->list_select(htmlspecialchars($_GET["table"]), htmlspecialchars($_GET["champ"]), htmlspecialchars($_GET["name"]), htmlspecialchars($_GET["script"]), htmlspecialchars($_GET["cond"]));
             break;
-        case 3://It needs to check if physique ou virtuel
+        case 3://It needs to check if the value of champ is in the table exist or not
+            if(isset($_GET["table"]) && isset($_GET["champ"]) && isset($_GET["value"]))
+                if($bdd->isInTable(htmlspecialchars($_GET["table"]), htmlspecialchars($_GET["champ"]), htmlspecialchars($_GET["value"])))
+                    echo "true";
+                else
+                    echo "false";
             break;
         default:
             echo "pas cool";
