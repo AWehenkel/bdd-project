@@ -85,7 +85,6 @@ class db_requester {
     function list_select($table, $champ, $name, $script = "", $cond = ""){
         $query = "SELECT DISTINCT ".$champ." FROM ".$table." ".$cond;
         $result = $this->bdd_query($query);
-        echo $query;
         $ret = "";
         if($result){
             $ret .= "<select onchange = '".$script."' name = ".$name."><option></option>";
@@ -132,6 +131,7 @@ if(isset($_GET['action'])){
                 else
                     echo "false";
             break;
+        case 4://It needs a radio
         default:
             echo "pas cool";
     }
