@@ -129,6 +129,7 @@ class db_requester {
     function insertPhysicalGame($id_jeu, $id_plateforme, $state, $livret, $emballage){
         $query = "SELECT id_exemplaire FROM exemplaire WHERE id_jeu = ".$id_jeu." AND id_plateforme = ".$id_plateforme." ORDER BY id_exemplaire DESC LIMIT 0,1";
         $result = $this->bdd_query($query)->fetch_all();
+        echo $query;
         $id_exemplaire = $result[0][0] + 1;
         $liv = 0;
         $emb = 0;
@@ -137,8 +138,11 @@ class db_requester {
         if($emballage)
             $emb = 1;
         $query = "INSERT INTO exemplaire VALUES(".$id_jeu.",".$id_exemplaire.", ".$id_plateforme.")";
+        echo $query;
         $this->bdd_query($query);
         $query = "INSERT INTO exemplaire_physique VALUES(".$id_jeu.",".$id_exemplaire.", ".$state.",".$emb.", ".$liv.")";
+        echo $query;
+        $this->bdd_query($query);
     }
 }
 
