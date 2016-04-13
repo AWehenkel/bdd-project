@@ -149,7 +149,8 @@ class db_requester {
     }
 
     function sortEmul(){
-        $query = "SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
+        $query =
+            "(SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
        FROM
           (SELECT id_emulateur, COUNT(id_exemplaire) AS nbreVirtuel
           FROM peut_emuler
@@ -170,28 +171,39 @@ class db_requester {
            GROUP BY id_emulateur
          ) AS T2
         ORDER BY performance DESC
-      ";
+      )";
         $result = $this->bdd_query($query);
         return $result;
     }
 
     function suggestions_select($id_ami){
-        $query = "SELECT id_jeu
-                  FROM Jeu_Video NATURAL JOIN (SELECT id_exemplaire, id_jeu
-							                  FROM Exemplaire
-							                  WHERE id_exemplaire (NOT IN (SELECT id_exemplaire
-														                  FROM Pret
-														                  WHERE date_retour ISNULL) AS P2) AS T1 AND id_plateforme (IN (SELECT id_plateforme
-																										                   FROM Pret NATURAL JOIN Exemplaire
-																										                   WHERE id_ami = ".$id_ami.") AS P1)) NATURAL JOIN (SELECT id_jeu, style
-																																                    	   FROM Jeu_Video
-																																                           WHERE style (IN (SELECT style
-																																						                   FROM Pret NATURAL JOIN Jeu_Video
-																																						                   WHERE id_ami = ".$id_ami.")) AND id_jeu (NOT IN (SELECT id_jeu
-																																															            FROM Pret
-																																															            WHERE id_ami = ".$id_ami.")))
-                  ORDER BY note DESC
-                  LIMIT 0,4";
+        $query =
+        "(SELECT id_jeu
+        FROM Jeu_Video
+        WHERE id_jeu IN ((SELECT id_jeu
+                         FROM Jeu_Video
+                         WHERE id_jeu NOT IN (SELECT id_jeu
+                                             FROM Pret
+                                             WHERE id_ami = ".$id_ami.")))
+        AND id_jeu IN ((SELECT id_jeu
+                       FROM Jeu_Video
+                       WHERE style IN (SELECT style
+                                      FROM Pret NATURAL JOIN Jeu_Video
+                                      WHERE id_ami = ".$id_ami.")))
+        AND id_jeu IN ((SELECT id_jeu
+                       FROM Jeu_Video NATURAL JOIN Exemplaire
+                       WHERE id_exemplaire NOT IN (SELECT id_exemplaire
+                                                   FROM Pret
+                                                   WHERE date_retour = null)))
+        AND id_jeu IN ((SELECT id_jeu
+                       FROM Jeu_Video NATURAL JOIN Exemplaire
+                       WHERE id_plateforme IN (SELECT id_plateforme
+                                              FROM Pret NATURAL JOIN Exemplaire
+                                              WHERE id_ami = ".$id_ami.")))
+        ORDER BY note DESC
+        LIMIT 0,4)";
+
+        echo $query. " ".$id_ami;
         $result = $this->bdd_query($query);
         return $result;
     }
