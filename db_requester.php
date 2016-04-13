@@ -38,9 +38,12 @@ class db_requester {
         return $table_select."</select>";
     }
 
-    function print_table($table, $start = 0, $number = 25, $restriction = "*"){
-        $query = "SELECT ".$restriction." FROM ".$table. " LIMIT ".$start.", ".$number;
-        $result = $this->bdd_query($query);
+    function print_table($table, $start = 0, $number = 25, $restriction = "*", $doQuery = true, $noQueryResult = NULL){
+        if($doQuery){
+            $query = "SELECT ".$restriction." FROM ".$table. " LIMIT ".$start.", ".$number;
+            $result = $this->bdd_query($query);
+        }
+        else {$result = $noQueryResult;}
         if($result){
             $champs = $result->fetch_assoc();
             echo "<table class = 'result_table'><tr>";
@@ -55,6 +58,7 @@ class db_requester {
             }
             echo "</table>";
         }
+        else echo "Pas de resultats trouvés dans la base de donnée";
 
     }
 
@@ -144,11 +148,37 @@ class db_requester {
         if($emballage)
             $emb = 1;
         $query = "INSERT INTO exemplaire VALUES(".$id_jeu.",".$id_exemplaire.", ".$id_plateforme.")";
-        echo $query;
         $this->bdd_query($query);
         $query = "INSERT INTO exemplaire_physique VALUES(".$id_jeu.",".$id_exemplaire.", ".$state.",".$emb.", ".$liv.")";
-        echo $query;
         $this->bdd_query($query);
+    }
+
+    function sortEmul(){
+        $query =
+            "(SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
+       FROM
+          (SELECT id_emulateur, COUNT(id_exemplaire) AS nbreVirtuel
+          FROM peut_emuler
+          GROUP BY id_emulateur
+          ) AS T1
+          NATURAL JOIN
+          (SELECT id_emulateur,COUNT(id_exemplaire) AS nbreVirtuel_Total
+           FROM
+              emule #(id_emulateur, id_plateforme)
+              NATURAL JOIN
+              (SELECT id_plateforme, id_exemplaire
+                  FROM
+                    plateforme_du_jeu #(id_jeu, id_plateforme)
+                    NATURAL JOIN
+                    (SELECT id_jeu, id_exemplaire
+                      FROM exemplaire_virtuel) AS T2
+                    ) AS T2
+           GROUP BY id_emulateur
+         ) AS T2
+        ORDER BY performance DESC
+      )";
+        $result = $this->bdd_query($query);
+        return $result;
     }
 }
 
