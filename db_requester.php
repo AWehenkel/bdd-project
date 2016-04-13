@@ -7,9 +7,6 @@
  */
 
 class db_requester {
-    function __construct(){
-
-    }
 
     function bdd_query($query){
         $bdd = mysqli_connect("localhost", "group8", "IR5ovtPs", "bdd_projet");
@@ -40,7 +37,8 @@ class db_requester {
             $query = "SELECT ".$restriction." FROM ".$table. " LIMIT ".$start.", ".$number;
             $result = $this->bdd_query($query);
         }
-        else {$result = $noQueryResult;}
+        else
+            $result = $noQueryResult;
         if($result){
             $champs = $result->fetch_assoc();
             echo "<table class = 'result_table'><tr>";
@@ -55,7 +53,7 @@ class db_requester {
             }
             echo "</table>";
         }
-        else echo "Pas de resultats trouvés dans la base de donnée";
+        else echo "Pas de resultats trouvés dans la base de données";
 
     }
 
@@ -177,6 +175,40 @@ class db_requester {
         $result = $this->bdd_query($query);
         return $result;
     }
+
+    function suggestions_select($id_ami){
+        $query = "SELECT id_jeu
+                  FROM Jeu_Video NATURAL JOIN (SELECT id_exemplaire, id_jeu
+							                  FROM Exemplaire
+							                  WHERE id_exemplaire (NOT IN (SELECT id_exemplaire
+														                  FROM Pret
+														                  WHERE date_retour = null)) AND id_plateforme (IN (SELECT id_plateforme
+																										                   FROM Pret NATURAL JOIN Exemplaire
+																										                   WHERE id_ami = ".$id_ami."))) NATURAL JOIN (SELECT id_jeu, style
+																																                    	   FROM Jeu_Video
+																																                           WHERE style (IN (SELECT style
+																																						                   FROM Pret NATURAL JOIN Jeu_Video
+																																						                   WHERE id_ami = ".$id_ami.")) AND id_jeu (NOT IN (SELECT id_jeu
+																																															            FROM Pret
+																																															            WHERE id_ami = ".$id_ami.")))
+                  ORDER BY note DESC
+                  LIMIT 0,4";
+        echo $query. " ".$id_ami;
+        $result = $this->bdd_query($query);
+        return $result;
+    }
+
+    function ami_select($nom, $prenom){
+        $query = "SELECT id_ami FROM Ami WHERE nom = \"".$nom."\" AND prenom = \"".$prenom."\"";
+        $result = $this->bdd_query($query);
+
+        if($result){
+            $id = $result->fetch_all();
+            $id = $id[0][0];
+        }
+
+        return $id;
+    }
 }
 
 if(isset($_GET['action'])){
@@ -210,6 +242,13 @@ if(isset($_GET['action'])){
         case 4://It needs a checkbox
             if(isset($_GET["table"]) && isset($_GET["champ"]) && isset($_GET["name"]) && isset($_GET["script"]) && isset($_GET["cond"]))
                 echo $bdd->makeOptions(htmlspecialchars($_GET["table"]), htmlspecialchars($_GET["champ"]), htmlspecialchars($_GET["name"]), htmlspecialchars($_GET["script"]), htmlspecialchars($_GET["cond"]));
+            break;
+        case 5:
+            if (isset($_GET['name'])) {
+                $nom = explode(" ", $_GET["name"], 2);
+                $id = $bdd->ami_select($nom[1], $nom[0]);
+                $bdd->print_table(NULL, 0, 4, "*", false, $bdd->suggestions_select($id));
+            }
             break;
         default:
             echo "pas cool";

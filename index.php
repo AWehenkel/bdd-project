@@ -26,6 +26,9 @@ if(isset($_GET["disconnect"])){
     <div class = "link" >
         <a href = "sort_emul.php">Question d</a>
     </div>
+    <div class = "link" >
+        <a href = "suggest.php">Question e</a>
+    </div>
 </div>
 </body>
 </html>

@@ -28,7 +28,7 @@ $bdd = new db_requester();
     </div>
     <div class = "result-box">
         <div id = "result_box">
-            </br><label for = "table_name" ></label><?php echo $bdd->print_table(NULL, 0, 25, "*", false, $bdd->sortEmul()); ?>
+            </br><label for = "table_name" ></label><?php $bdd->print_table(NULL, 0, 25, "*", false, $bdd->sortEmul()); ?>
         </div>
     </div>
 </div>
