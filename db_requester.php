@@ -87,7 +87,7 @@ class db_requester {
         $result = $this->bdd_query($query);
         $ret = "";
         if($result){
-            $ret .= "<select onchange = '".$script."' name = ".$name."><option></option>";
+            $ret .= "<select id = \"".$name."\" onchange = '".$script."' name = ".$name."><option></option>";
             while($champ = $result->fetch_row())
                 $ret .= "<option>".$champ[0]."</option>";
             $ret .= "</select>";
@@ -95,32 +95,71 @@ class db_requester {
         return $ret;
     }
 
-
     function isInTable($table, $champ, $val){
         $query = "SELECT * FROM ".$table." WHERE ".$champ." = ".$val;
         $result = $this->bdd_query($query);
         return ($result->num_rows > 0);
+    }
+
+    function makeOptions($table, $champ, $name, $script = "", $cond = ""){
+        $query = "SELECT DISTINCT ".$champ." FROM ".$table." ".$cond;
+        $result = $this->bdd_query($query);
+        $ret = "";
+        if($result){
+            while($champ = $result->fetch_row())
+                $ret .= "<input onclick = \"".$script."\"type=\"checkbox\" name=\"".$name."[]\" value=\"".$champ[0]."\">".$champ[0]."</input>";
+        }
+        return $ret;
+    }
+
+    function insertVirtualGame($id_jeu, $id_plateforme, $ids_emulateur, $taille){
+        $query = "SELECT id_exemplaire FROM exemplaire WHERE id_jeu = ".$id_jeu." AND id_plateforme = ".$id_plateforme." ORDER BY id_exemplaire DESC LIMIT 0,1";
+        $result = $this->bdd_query($query)->fetch_all();
+        $id_exemplaire = $result[0][0] + 1;
+        $query = "INSERT INTO exemplaire VALUES(".$id_jeu.",".$id_exemplaire.", ".$id_plateforme.")";
+        $this->bdd_query($query);
+        $query = "INSERT INTO exemplaire_virtuel VALUES(".$id_jeu.",".$id_exemplaire.", ".$taille.")";
+        $this->bdd_query($query);
+        foreach($ids_emulateur as $id_em){
+            $query = "INSERT INTO peut_emuler VALUES(".$id_jeu.",".$id_exemplaire.", ".$id_em.")";
+            $this->bdd_query($query);
+        }
+    }
+
+    function insertPhysicalGame($id_jeu, $id_plateforme, $state, $livret, $emballage){
+        $query = "SELECT id_exemplaire FROM exemplaire WHERE id_jeu = ".$id_jeu." AND id_plateforme = ".$id_plateforme." ORDER BY id_exemplaire DESC LIMIT 0,1";
+        $result = $this->bdd_query($query)->fetch_all();
+        $id_exemplaire = $result[0][0] + 1;
+        $liv = 0;
+        $emb = 0;
+        if($livret)
+            $liv = 1;
+        if($emballage)
+            $emb = 1;
+        $query = "INSERT INTO exemplaire VALUES(".$id_jeu.",".$id_exemplaire.", ".$id_plateforme.")";
+        $this->bdd_query($query);
+        $query = "INSERT INTO exemplaire_physique VALUES(".$id_jeu.",".$id_exemplaire.", ".$state.",".$emb.", ".$liv.")";
     }
 }
 
 if(isset($_GET['action'])){
     $bdd = new db_requester();
     //foreach($_GET as $val)
-        //echo $val." ";
+       // echo $val." ";
     switch(htmlspecialchars($_GET['action'])){
         case 0:
             if(isset($_GET['table']))
-                echo $bdd->print_form(htmlspecialchars($_GET['table']));
+                $bdd->print_form(htmlspecialchars($_GET['table']));
             else
                 echo "Bad request";
             break;
         case 1:
             if(isset($_GET['table']))
-                echo $bdd->print_table(htmlspecialchars($_GET['table']));
+                $bdd->print_table(htmlspecialchars($_GET['table']));
             else
                 echo "Bad request";
             break;
-        case 2://It is a list_select_requesttable=jeu_video&champ=id&cond=WHERE style = "+val
+        case 2://It is a list_select_request
             if(isset($_GET["table"]) && isset($_GET["champ"]) && isset($_GET["name"]) && isset($_GET["script"]) && isset($_GET["cond"]))
                 echo $bdd->list_select(htmlspecialchars($_GET["table"]), htmlspecialchars($_GET["champ"]), htmlspecialchars($_GET["name"]), htmlspecialchars($_GET["script"]), htmlspecialchars($_GET["cond"]));
             break;
@@ -131,7 +170,10 @@ if(isset($_GET['action'])){
                 else
                     echo "false";
             break;
-        case 4://It needs a radio
+        case 4://It needs a checkbox
+            if(isset($_GET["table"]) && isset($_GET["champ"]) && isset($_GET["name"]) && isset($_GET["script"]) && isset($_GET["cond"]))
+                echo $bdd->makeOptions(htmlspecialchars($_GET["table"]), htmlspecialchars($_GET["champ"]), htmlspecialchars($_GET["name"]), htmlspecialchars($_GET["script"]), htmlspecialchars($_GET["cond"]));
+            break;
         default:
             echo "pas cool";
     }
