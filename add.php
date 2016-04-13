@@ -16,7 +16,6 @@ if(isset($_GET["disconnect"])){
     <link rel="stylesheet" type="text/css" media="all" href="style.css" />
 </head>
 <script>
-    var id_jeu = document.getElementById("id_jeu_select"), id_plateforme = document.getElementById("id_plateforme_select");
     function select_style(val){
         var id_jeu = document.getElementById("id_jeu_select"), id_plateforme = document.getElementById("id_plateforme_select"), phy_vir = document.getElementById("physical_virtual");
         phy_vir.innerHTML = "";

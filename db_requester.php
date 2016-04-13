@@ -31,7 +31,9 @@ class db_requester {
         $result = $this->bdd_query($query);
         $table_select = "<select onchange = '".$script."(this.value);' id = '".$name."' name = '".$name."'><option></option>";
         while($table = $result->fetch_row()){
-            $table_select .= "<option value='".$table[0]."'>".$table[0]."</option>";
+            $table_select .= "<option value='";
+            foreach($table as $el)
+                echo $el."'>".$el."</option>";
         }
         return $table_select."</select>";
     }
@@ -88,8 +90,12 @@ class db_requester {
         $ret = "";
         if($result){
             $ret .= "<select id = \"".$name."\" onchange = '".$script."' name = ".$name."><option></option>";
-            while($champ = $result->fetch_row())
-                $ret .= "<option>".$champ[0]."</option>";
+            while($champ = $result->fetch_row()){
+                $ret .= "<option>";
+                foreach($champ as $val)
+                    $ret .= $val. " ";
+                $ret .= "</option>";
+            }
             $ret .= "</select>";
         }
         return $ret;
