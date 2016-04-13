@@ -30,11 +30,8 @@ class db_requester {
         $query = "SHOW TABLES";
         $result = $this->bdd_query($query);
         $table_select = "<select onchange = '".$script."(this.value);' id = '".$name."' name = '".$name."'><option></option>";
-        while($table = $result->fetch_row()){
-            $table_select .= "<option value='";
-            foreach($table as $el)
-                echo $el."'>".$el."</option>";
-        }
+        while($table = $result->fetch_row())
+            $table_select .= "<option value='".$table[0]."'>".$table[0]."</option>";
         return $table_select."</select>";
     }
 
