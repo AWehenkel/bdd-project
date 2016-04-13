@@ -149,8 +149,7 @@ class db_requester {
     }
 
     function sortEmul(){
-        $query =
-            "(SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
+        $query = "SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
        FROM
           (SELECT id_emulateur, COUNT(id_exemplaire) AS nbreVirtuel
           FROM peut_emuler
@@ -171,7 +170,7 @@ class db_requester {
            GROUP BY id_emulateur
          ) AS T2
         ORDER BY performance DESC
-      )";
+      ";
         $result = $this->bdd_query($query);
         return $result;
     }
@@ -182,9 +181,9 @@ class db_requester {
 							                  FROM Exemplaire
 							                  WHERE id_exemplaire (NOT IN (SELECT id_exemplaire
 														                  FROM Pret
-														                  WHERE date_retour = null)) AND id_plateforme (IN (SELECT id_plateforme
+														                  WHERE date_retour ISNULL) AS P2) AS T1 AND id_plateforme (IN (SELECT id_plateforme
 																										                   FROM Pret NATURAL JOIN Exemplaire
-																										                   WHERE id_ami = ".$id_ami."))) NATURAL JOIN (SELECT id_jeu, style
+																										                   WHERE id_ami = ".$id_ami.") AS P1)) NATURAL JOIN (SELECT id_jeu, style
 																																                    	   FROM Jeu_Video
 																																                           WHERE style (IN (SELECT style
 																																						                   FROM Pret NATURAL JOIN Jeu_Video
@@ -193,7 +192,6 @@ class db_requester {
 																																															            WHERE id_ami = ".$id_ami.")))
                   ORDER BY note DESC
                   LIMIT 0,4";
-        echo $query. " ".$id_ami;
         $result = $this->bdd_query($query);
         return $result;
     }
