@@ -9,12 +9,12 @@
 </head>
 <body>
         <?php
-            include_once "db_requester.php";
+            include_once "DBRequester.php";
             if(isset($_SESSION["id"]))
                 header('location: index.php');
             if(isset($_POST["id"]) && isset($_POST["mdp"])){
-                $test = new db_requester();
-                if($test->verify_password($_POST["id"], $_POST["mdp"])) {
+                $test = new DBRequester();
+                if($test->verifyPassword($_POST["id"], $_POST["mdp"])) {
                     $_SESSION["id"] = htmlspecialchars($_POST["id"]);
                     header('location: index.php');
                 }

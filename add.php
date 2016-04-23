@@ -108,16 +108,15 @@ if(isset($_GET["disconnect"])){
             id_plateforme = document.getElementById("id_plateforme").value;
         var physical_virtual = null;
         var inputElements = document.getElementsByClassName('physical_virtual');
-        for(var i=0; inputElements[i]; ++i){
+        for(i=0; inputElements[i]; ++i){
             if(inputElements[i].checked){
                 inputElements = inputElements[i].value;
                 break;
             }
         }
         if(physical_virtual != ""){
-            var emulateurs = null;
-            var inputElements = document.getElementsByClassName('id_emulateur');
-            for(var i=0; inputElements[i]; ++i){
+            inputElements = document.getElementsByClassName('id_emulateur');
+            for(i=0; inputElements[i]; ++i){
                 if(inputElements[i].checked){
                     id_emulateur += inputElements[i].value + " ";
                     break;
@@ -129,8 +128,8 @@ if(isset($_GET["disconnect"])){
 </script>
 <body>
 <?php
-include_once "db_requester.php";
-$bdd = new db_requester();
+include_once "DBRequester.php";
+$bdd = new DBRequester();
 if(isset($_POST["id_jeu"]) && isset($_POST["id_plateforme"]) && isset($_POST["physical_virtual"])){
     if($_POST["physical_virtual"] == "" && isset($_POST["state"]) && isset($_POST["livret"]) && isset($_POST["emballage"]))
         $bdd->insertPhysicalGame(htmlspecialchars($_POST["id_jeu"]),htmlspecialchars($_POST["id_plateforme"]), htmlspecialchars($_POST["state"]), htmlspecialchars($_POST["livret"]) == "true", htmlspecialchars($_POST["emballage"]) == "true");
@@ -143,15 +142,15 @@ if(isset($_POST["id_jeu"]) && isset($_POST["id_plateforme"]) && isset($_POST["ph
     <div class = "menu-selection">
         <h2>Ajout d'un exemplaire</h2>
         <form action = "add.php" method = "post" >
-            </br><label for = "table_name" >Selectionnez le type de jeu </label>
-            <?php echo $bdd->list_select("jeu_video", "style", "type", "select_style(this.value);"); ?>
+            <br/><label for = "table_name" >Selectionnez le type de jeu </label>
+            <?php echo $bdd->listSelect("jeu_video", "style", "type", "select_style(this.value);"); ?>
             <span id = "id_jeu_select"></span>
             <span id = "id_plateforme_select"></span>
             <span id = "physical_virtual"></span>
             <span style = "display:none;" id = "state" >
-                Etat : <select name = "state"><option value = 1>1</option><option value = 2>2</option><option value = 3>3</option><option value = 4>4</option><option value = 5>5</option></select>
-                <br/> Livret : Vrai <input type = "radio" value = "true" name = "livret" checked/> Faux <input type = "radio" value = "false" name = "livret" />
-                <br/> Emballage : Vrai <input type = "radio" value = "true" name = "emballage" checked/> Faux <input type = "radio" value = "false" name = "emballage" />
+                <label for = "state"> Etat : <select name = "state"><option value = 1>1</option><option value = 2>2</option><option value = 3>3</option><option value = 4>4</option><option value = 5>5</option></select></label>
+                <br/> <label for = "livret">Livret : Vrai <input type = "radio" value = "true" name = "livret" checked/> Faux <input type = "radio" value = "false" name = "livret" /></label>
+                <br/> <label for = "emballage">Emballage : Vrai <input type = "radio" value = "true" name = "emballage" checked/> Faux <input type = "radio" value = "false" name = "emballage" /></label>
             </span>
             <span id = "emulateurs"></span>
             <span onclick = "register();" style = "display:none;" id = "register"><input type = "submit" value = "Enregistrer"/></span>

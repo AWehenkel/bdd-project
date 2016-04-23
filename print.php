@@ -17,7 +17,7 @@
     <link rel="stylesheet" type="text/css" media="all" href="style.css" />
 </head>
 <script>
-    function update_query(value){
+    function updateQuery(value){
         if(value == "")
             return;
         var xhttp = new XMLHttpRequest();
@@ -38,19 +38,23 @@
             }
         };
     }
+
+    function makeChoice(){
+
+    }
 </script>
 <body>
     <?php
-        include_once "db_requester.php";
-        $bdd = new db_requester();
+        include_once "DBRequester.php";
+        $bdd = new DBRequester();
     ?>
     <div class = "center">
         <div class = "menu-selection">
             <h2>Menu de selection</h2>
             <div class = "left">
-                </br><label for = "table_name" >Selection d'une table </label><?php echo $bdd->list_table_select("table_name", "update_query"); ?>
+                <br/><label for = "table_name" >Selection d'une table </label><?php echo $bdd->listTableSelect("table_name", "updateQuery"); ?>
             </div>
-            Restrictions :</br>
+            Restrictions :<br/>
             <div id = "selection_box" class = "right">
 
             </div>

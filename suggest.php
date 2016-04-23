@@ -38,14 +38,14 @@ if(isset($_GET["disconnect"])){
 </script>
 <body>
 <?php
-include_once "db_requester.php";
-$bdd = new db_requester();
+include_once "DBRequester.php";
+$bdd = new DBRequester();
 ?>
 <div class = "center">
     <div class = "menu-selection">
         <h2>Suggestion pour un ami</h2>
-        </br><label for = "table_name" >Selectionnez l'ami </label>
-        <?php echo  $bdd->list_select("ami", "prenom, nom", "type", "select_ami(this.value);"); ?>
+        <br/><label for = "table_name" >Selectionnez l'ami </label>
+        <?php echo  $bdd->listSelect("ami", "prenom, nom", "type", "select_ami(this.value);"); ?>
 
     </div>
 

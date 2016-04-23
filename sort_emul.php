@@ -19,8 +19,8 @@ if(isset($_GET["disconnect"])){
 </head>
 <body>
 <?php
-include_once "db_requester.php";
-$bdd = new db_requester();
+include_once "DBRequester.php";
+$bdd = new DBRequester();
 ?>
 <div class = "center">
     <div class = "menu-selection">
@@ -28,7 +28,7 @@ $bdd = new db_requester();
     </div>
     <div class = "result-box">
         <div id = "result_box">
-            </br><label for = "table_name" ></label><?php $bdd->print_table(NULL, 0, 25, "*", false, $bdd->sortEmul()); ?>
+            <br/><label for = "table_name" ></label><?php $bdd->printTable(NULL, 0, 25, "*", false, $bdd->sortEmul()); ?>
         </div>
     </div>
 </div>
