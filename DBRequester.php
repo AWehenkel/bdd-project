@@ -8,7 +8,7 @@
 class DBRequester {
 
     function bddQuery($query){
-        $bdd = mysqli_connect("localhost", "group8", "IR5ovtPs", "bdd_projet");
+        $bdd = mysqli_connect("localhost", "group8", "IR5ovtPs", "group8");
         $result = $bdd->query($query);
         $bdd->close();
         return $result;
@@ -39,45 +39,54 @@ class DBRequester {
         else
             $result = $noQueryResult;
         if($result){
-            $champs = $result->fetch_assoc();
-            echo "<table class = 'result_table'><tr>";
-            foreach($champs as $key => $value)
-                echo "<td>$key</td>";
-            echo "</tr>";
-            foreach($result as $val){
+            $i = true;
+            while($champs = $result->fetch_assoc()){
+                if($i){
+                    echo "<table class = 'result_table'><tr>";
+                    foreach($champs as $key => $value)
+                        echo "<td>$key</td>";
+                    echo "<tr/>";
+                    $i = false;
+                }
                 echo "<tr>";
-                foreach($val as $key => $value)
+                foreach($champs as $key => $value)
                     echo "<td>$value</td>";
                 echo "<tr/>";
             }
             echo "</table>";
         }
-        else echo "Pas de resultats trouvés dans la base de données";
+        else
+            echo "Pas de resultats trouvés dans la base de données";
 
     }
 
     function printForm($table, $script = ""){
-        $query = "SHOW COLUMNS FROM $table";
+        $query = "SELECT * FROM $table LIMIT 0,1";
         $champs = $this->bddQuery($query);
         echo "<table>";
         $val = 0;
         while($champs && $champ = $champs->fetch_assoc()){
-            $query = "SELECT DISTINCT $champ[Field] FROM $table";
-            $result = $this->bddQuery($query)->fetch_all();
-            if($val == 0)
-                echo "<tr>";
+            foreach($champ as $key => $value){
+                $query = "SELECT DISTINCT $key FROM $table ORDER BY $key";
+                $result = $this->bddQuery($query);
 
-            if($result) {
-                echo "<td>$champ[Field] <select onchange = '$script' name = '$champ[Field]'>";
-                echo "<option value = '*'>*</option>";
-                foreach ($result as $value) {
-                    echo "<option value = '$value[0]'>$value[0]</option>";
+                if($val == 0)
+                    echo "<tr>";
+
+                if($result) {
+                    echo "<td>$key <select onchange = '$script' name = '$key'>";
+                    echo "<option value = '*'>*</option>";
+
+                    while ($value = $result->fetch_row()) {
+                        echo "<option value = '$value[0]'>$value[0]</option>";
+                    }
+
+                    echo "</select></td>";
+                    $val = ($val + 1)%2;
                 }
-                echo "</select></td>";
-                $val = ($val + 1)%2;
+                if($val == 0)
+                    echo "</tr>";
             }
-            if($val == 0)
-                echo "</tr>";
         }
         echo "</table>";
 
@@ -112,34 +121,36 @@ class DBRequester {
         $ret = "";
         if($result){
             while($champ = $result->fetch_row())
-                $ret .= "<input onclick = \" $script \" type = checkbox  name=\" $name\" value=\"$champ[0]\">$champ[0]</input>";
+                $ret .= "<input onclick = \" $script \" type = checkbox  name=\"".$name."[]\" value=\"$champ[0]\">$champ[0]</input>";
         }
         return $ret;
     }
 
     function insertVirtualGame($id_jeu, $id_plateforme, $ids_emulateur, $taille){
         $query = "SELECT id_exemplaire FROM exemplaire WHERE id_jeu = $id_jeu AND id_plateforme = $id_plateforme ORDER BY id_exemplaire DESC LIMIT 0,1";
-        $result = $this->bddQuery($query)->fetch_all();
-        $id_exemplaire = $result[0][0] + 1;
+        $result = $this->bddQuery($query);
+        if($result && $result = $result->fetch_row())
+            $id_exemplaire = $result[0] + 1;
+        else
+            $id_exemplaire = 0;
         $query = "INSERT INTO exemplaire VALUES($id_jeu,$id_exemplaire, $id_plateforme)";
-        echo $query;
         $this->bddQuery($query);
         $query = "INSERT INTO exemplaire_virtuel VALUES($id_jeu,$id_exemplaire, $taille)";
-        echo $query;
-        echo $ids_emulateur[0];
+
         $this->bddQuery($query);
         foreach($ids_emulateur as $id_em){
             echo $id_em;
             $query = "INSERT INTO peut_emuler VALUES($id_jeu,$id_exemplaire, $id_em)";
+            echo $query;
             $this->bddQuery($query);
         }
     }
 
     function insertPhysicalGame($id_jeu, $id_plateforme, $state, $livret, $emballage){
         $query = "SELECT id_exemplaire FROM exemplaire WHERE id_jeu = $id_jeu AND id_plateforme = $id_plateforme ORDER BY id_exemplaire DESC LIMIT 0,1";
-        $result = $this->bddQuery($query)->fetch_all();
-        if($result)
-            $id_exemplaire = $result[0][0] + 1;
+        $result = $this->bddQuery($query);
+        if($result && $result = $result->fetch_row())
+            $id_exemplaire = $result[0] + 1;
         else
             $id_exemplaire = 0;
         $liv = 0;
@@ -184,43 +195,42 @@ class DBRequester {
 
     function suggestionsSelect($id_ami){
         $query = "(SELECT id_jeu
-        FROM Jeu_Video
-        WHERE id_jeu IN ((SELECT id_jeu
-                         FROM Jeu_Video
-                         WHERE id_jeu NOT IN (SELECT id_jeu
-                                             FROM Pret
-                                             WHERE id_ami = $id_ami)))
-        AND id_jeu IN ((SELECT id_jeu
-                       FROM Jeu_Video
-                       WHERE style IN (SELECT style
-                                      FROM Pret NATURAL JOIN Jeu_Video
-                                      WHERE id_ami = $id_ami)))
-        AND id_jeu IN ((SELECT id_jeu
-                       FROM Jeu_Video NATURAL JOIN Exemplaire
-                       WHERE id_exemplaire NOT IN (SELECT id_exemplaire
-                                                   FROM Pret
-                                                   WHERE date_retour = null)))
-        AND id_jeu IN ((SELECT id_jeu
-                       FROM Jeu_Video NATURAL JOIN Exemplaire
-                       WHERE id_plateforme IN (SELECT id_plateforme
-                                              FROM Pret NATURAL JOIN Exemplaire
-                                              WHERE id_ami = $id_ami)))
-        ORDER BY note DESC
-        LIMIT 0,5)";
+            FROM jeu_video
+            WHERE id_jeu IN ((SELECT id_jeu
+                             FROM jeu_video
+                             WHERE id_jeu NOT IN (SELECT id_jeu
+                                                 FROM pret
+                                                 WHERE id_ami = $id_ami)))
+            AND id_jeu IN ((SELECT id_jeu
+                           FROM jeu_video
+                           WHERE style IN (SELECT style
+                                          FROM pret NATURAL JOIN jeu_video
+                                          WHERE id_ami = $id_ami)))
+            AND id_jeu IN ((SELECT id_jeu
+                           FROM jeu_video NATURAL JOIN exemplaire
+                           WHERE id_exemplaire NOT IN (SELECT id_exemplaire
+                                                       FROM pret
+                                                       WHERE date_retour = null)))
+            AND id_jeu IN ((SELECT id_jeu
+                           FROM jeu_video NATURAL JOIN exemplaire
+                           WHERE id_plateforme IN (SELECT id_plateforme
+                                                  FROM pret NATURAL JOIN exemplaire
+                                                  WHERE id_ami = $id_ami)))
+            ORDER BY note DESC
+            LIMIT 0,5)";
 
         $result = $this->bddQuery($query);
         return $result;
     }
 
     function amiSelect($nom, $prenom){
-        $query = "SELECT id_ami FROM Ami WHERE nom = \"$nom\" AND prenom = \"$prenom\" ";
+        $query = "SELECT id_ami FROM ami WHERE nom = \"$nom\" AND prenom = \"$prenom\" ";
         $result = $this->bddQuery($query);
         $id = NULL;
         if($result){
-            $id = $result->fetch_all();
-            $id = $id[0][0];
+            $id = $result->fetch_row();
+            $id = $id[0];
         }
-
         return $id;
     }
 
@@ -241,7 +251,7 @@ class DBRequester {
                          (SELECT id_jeu, COUNT(id_exemplaire) AS fonct
                           FROM exemplaire_virtuel
                           WHERE id_exemplaire IN (SELECT id_exemplaire
-                                                  FROM peut_emuler NATURAL JOIN Emulateur_Fonctionne_Sur)
+                                                  FROM peut_emuler NATURAL JOIN emulateur_fonctionne_sur)
                           GROUP BY id_jeu)) AS T1
                   GROUP BY id_jeu) AS T2
              GROUP BY style
@@ -254,16 +264,16 @@ class DBRequester {
 if(isset($_GET['action'])){
     $bdd = new DBRequester();
     //foreach($_GET as $val)
-       // echo $val." ";
+    // echo $val." ";
     switch(htmlspecialchars($_GET['action'])){
         case 0:
-            if(isset($_GET['table']))
-                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));
+            if(isset($_GET['table'])){
+                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));}
             else
                 echo "Bad request";
             break;
         case 1:
-            if(isset($_GET['table']) && isset($_GET['cond']))
+            if(isset($_GET['table']) && isset($_GET['cond']) && !empty($_GET['cond']))
                 $bdd->printTable(htmlspecialchars($_GET['table']), "WHERE ".htmlspecialchars($_GET['cond']));
             else if(isset($_GET['table']))
                 $bdd->printTable(htmlspecialchars($_GET['table']));
