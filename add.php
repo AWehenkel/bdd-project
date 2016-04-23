@@ -1,12 +1,5 @@
 <?php
-session_start();
-if(!isset($_SESSION["id"])){
-    header("location: connexion.php");
-}
-if(isset($_GET["disconnect"])){
-    session_destroy();
-    header("location: connexion.php");
-}
+include("header.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -102,29 +95,7 @@ if(isset($_GET["disconnect"])){
         document.getElementById('emulateurs').innerHTML = '';
         document.getElementById('state').style.display = 'block';
     }
-    function register(){
-        var type = document.getElementById("type").value,
-            id_jeu = document.getElementById("id_jeu").value,
-            id_plateforme = document.getElementById("id_plateforme").value;
-        var physical_virtual = null;
-        var inputElements = document.getElementsByClassName('physical_virtual');
-        for(i=0; inputElements[i]; ++i){
-            if(inputElements[i].checked){
-                inputElements = inputElements[i].value;
-                break;
-            }
-        }
-        if(physical_virtual != ""){
-            inputElements = document.getElementsByClassName('id_emulateur');
-            for(i=0; inputElements[i]; ++i){
-                if(inputElements[i].checked){
-                    id_emulateur += inputElements[i].value + " ";
-                    break;
-                }
-            }
-        }
-        alert(type + id_jeu + id_plateforme );
-    }
+
 </script>
 <body>
 <?php
@@ -153,7 +124,7 @@ if(isset($_POST["id_jeu"]) && isset($_POST["id_plateforme"]) && isset($_POST["ph
                 <br/> <label for = "emballage">Emballage : Vrai <input type = "radio" value = "true" name = "emballage" checked/> Faux <input type = "radio" value = "false" name = "emballage" /></label>
             </span>
             <span id = "emulateurs"></span>
-            <span onclick = "register();" style = "display:none;" id = "register"><input type = "submit" value = "Enregistrer"/></span>
+            <span style = "display:none;" id = "register"><input type = "submit" value = "Enregistrer"/></span>
         </form>
     </div>
 </div>

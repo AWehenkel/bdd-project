@@ -14,6 +14,8 @@ body{
     background-image: url("jeu.jpg");
     background-repeat: no-repeat;
     background-size: cover;
+    margin-top: 0;
+    background-attachment: fixed;
 }
 .center{
     width: 100%;
@@ -69,15 +71,20 @@ html{
     border-radius: 5px;
     border: solid 1px black;
     color: white;
-    height: 450px;
-    overflow: scroll;
+    max-height: 750px;
+    overflow-y: overlay;
 }
 h2{
     text-align: center;
 }
 .result_table{
-    width: 100%;
+    width: 70%;
     text-align: center;
+    margin: auto;
+    color: white;
+    border-radius: 10px;
+    border: 2px solid green;
+    background-color: rgba(155, 178, 133, 0.53);
 }
 .left{
     float: left;
@@ -88,4 +95,38 @@ h2{
 .right{
     float: right;
     display: inline;
+}
+
+.link-top{
+    width: 16.2%;
+    background-color: rgba(183, 228, 131, 0.55);
+    display: inline-block;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    border: 1px solid white;
+    border-radius: 1px;
+}
+
+.link-top:hover{
+    background-color: rgba(183, 228, 131, 0.65);
+    cursor: pointer;
+}
+
+.link-top a{
+    color:white;
+}
+
+.top-menu{
+    margin: auto;
+    width: 99.8%;
+    background-color: rgba(0, 0, 0, 0.19);
+    padding: 5px;
+    margin-top: 0;
+    top: 0;
+    margin-bottom: 30px;
+}
+
+.id_ami_select{
+
 }

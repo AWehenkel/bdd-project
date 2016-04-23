@@ -1,14 +1,6 @@
 <?php
-session_start();
-if(!isset($_SESSION["id"])){
-    header("location: connexion.php");
-}
-if(isset($_GET["disconnect"])){
-    session_destroy();
-    header("location: connexion.php");
-}
+include("header.php");
 ?>
-
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -28,9 +20,8 @@ if(isset($_GET["disconnect"])){
         xhttp.open("GET", "DBRequester.php?action=5&name="+value, true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
-            if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
-                document.getElementById("id_ami_select").innerHTML = " id ami : "+xhttp.responseText;
-            }
+            if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0))
+                document.getElementById("id_ami_select").innerHTML = xhttp.responseText;
         };
     }
 
@@ -49,7 +40,7 @@ $bdd = new DBRequester();
 
     </div>
 
-    <div id= "id_ami_select">
+    <div id= "id_ami_select" class  = "result-box">
 
 
     </div>

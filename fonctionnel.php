@@ -1,15 +1,6 @@
 <?php
-session_start();
-
-if(!isset($_SESSION["id"])){
-    header("location: connexion.php");
-}
-if(isset($_GET["disconnect"])){
-    session_destroy();
-    header("location: connexion.php");
-}
+include("header.php");
 ?>
-
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -28,7 +19,7 @@ $bdd = new DBRequester();
     </div>
     <div class = "result-box">
         <div id = "result_box">
-        <br/><label for = "table_name" ></label><?php $bdd->printTable(NULL, 0, 10, "*", false, $bdd->getFonctionnel()); ?>
+        <br/><label for = "table_name" ></label><?php $bdd->printTable(NULL, "", "*", false, $bdd->getFonctionnel()); ?>
         </div>
     </div>
 </div>

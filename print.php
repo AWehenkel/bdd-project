@@ -1,13 +1,5 @@
 <?php
-    session_start();
-
-    if(!isset($_SESSION["id"])){
-        header("location: connexion.php");
-        }
-    if(isset($_GET["disconnect"])){
-        session_destroy();
-        header("location: connexion.php");
-    }
+include("header.php");
 ?>
 <!DOCTYPE html>
 <html>

@@ -5,7 +5,6 @@
  * Date: 07-04-16
  * Time: 15:44
  */
-
 class DBRequester {
 
     function bddQuery($query){
@@ -32,9 +31,9 @@ class DBRequester {
         return $table_select."</select>";
     }
 
-    function printTable($table, $cond = "", $start = 0, $number = 25, $restriction = "*", $doQuery = true, $noQueryResult = NULL){
+    function printTable($table, $cond = "", $restriction = "*", $doQuery = true, $noQueryResult = NULL){
         if($doQuery){
-            $query = "SELECT $restriction FROM $table $cond LIMIT $start, $number";
+            $query = "SELECT $restriction FROM $table $cond";
             $result = $this->bddQuery($query);
         }
         else
@@ -123,10 +122,14 @@ class DBRequester {
         $result = $this->bddQuery($query)->fetch_all();
         $id_exemplaire = $result[0][0] + 1;
         $query = "INSERT INTO exemplaire VALUES($id_jeu,$id_exemplaire, $id_plateforme)";
+        echo $query;
         $this->bddQuery($query);
         $query = "INSERT INTO exemplaire_virtuel VALUES($id_jeu,$id_exemplaire, $taille)";
+        echo $query;
+        echo $ids_emulateur[0];
         $this->bddQuery($query);
         foreach($ids_emulateur as $id_em){
+            echo $id_em;
             $query = "INSERT INTO peut_emuler VALUES($id_jeu,$id_exemplaire, $id_em)";
             $this->bddQuery($query);
         }
@@ -135,8 +138,10 @@ class DBRequester {
     function insertPhysicalGame($id_jeu, $id_plateforme, $state, $livret, $emballage){
         $query = "SELECT id_exemplaire FROM exemplaire WHERE id_jeu = $id_jeu AND id_plateforme = $id_plateforme ORDER BY id_exemplaire DESC LIMIT 0,1";
         $result = $this->bddQuery($query)->fetch_all();
-        echo $query;
-        $id_exemplaire = $result[0][0] + 1;
+        if($result)
+            $id_exemplaire = $result[0][0] + 1;
+        else
+            $id_exemplaire = 0;
         $liv = 0;
         $emb = 0;
         if($livret)
@@ -201,9 +206,8 @@ class DBRequester {
                                               FROM Pret NATURAL JOIN Exemplaire
                                               WHERE id_ami = $id_ami)))
         ORDER BY note DESC
-        LIMIT 0,4)";
+        LIMIT 0,5)";
 
-        echo $query. " ".$id_ami;
         $result = $this->bddQuery($query);
         return $result;
     }
@@ -285,7 +289,7 @@ if(isset($_GET['action'])){
             if (isset($_GET['name'])) {
                 $nom = explode(" ", $_GET["name"], 2);
                 $id = $bdd->amiSelect($nom[1], $nom[0]);
-                $bdd->printTable(NULL, "",0, 4, "*", false, $bdd->suggestionsSelect($id));
+                $bdd->printTable(NULL, "", "*", false, $bdd->suggestionsSelect($id));
             }
             break;
         default:
