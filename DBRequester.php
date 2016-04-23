@@ -18,7 +18,7 @@ class DBRequester {
     function verifyPassword($id, $pass){
         $id = htmlspecialchars($id);
         $pass = htmlspecialchars($pass);
-        $query = "SELECT * FROM users WHERE id = '".$id."' AND password = '".$pass."'";
+        $query = "SELECT * FROM users WHERE id = '$id' AND password = '$pass'";
         $result = $this->bddQuery($query);
         return ($result->num_rows > 0);
     }
@@ -26,15 +26,15 @@ class DBRequester {
     function listTableSelect($name, $script){
         $query = "SHOW TABLES";
         $result = $this->bddQuery($query);
-        $table_select = "<select onchange = '".$script."(this.value);' id = '".$name."' name = '".$name."'><option></option>";
+        $table_select = "<select onchange = '$script(this.value);' id = '$name' name = '$name'><option></option>";
         while($table = $result->fetch_row())
-            $table_select .= "<option value='".$table[0]."'>".$table[0]."</option>";
+            $table_select .= "<option value='$table[0]'>$table[0]</option>";
         return $table_select."</select>";
     }
 
-    function printTable($table, $start = 0, $number = 25, $restriction = "*", $doQuery = true, $noQueryResult = NULL){
+    function printTable($table, $cond = "", $start = 0, $number = 25, $restriction = "*", $doQuery = true, $noQueryResult = NULL){
         if($doQuery){
-            $query = "SELECT ".$restriction." FROM ".$table. " LIMIT ".$start.", ".$number;
+            $query = "SELECT $restriction FROM $table $cond LIMIT $start, $number";
             $result = $this->bddQuery($query);
         }
         else
@@ -43,12 +43,12 @@ class DBRequester {
             $champs = $result->fetch_assoc();
             echo "<table class = 'result_table'><tr>";
             foreach($champs as $key => $value)
-                echo "<td>".$key."</td>";
+                echo "<td>$key</td>";
             echo "</tr>";
             foreach($result as $val){
                 echo "<tr>";
                 foreach($val as $key => $value)
-                    echo "<td>".$value."</td>";
+                    echo "<td>$value</td>";
                 echo "<tr/>";
             }
             echo "</table>";
@@ -57,21 +57,22 @@ class DBRequester {
 
     }
 
-    function printForm($table){
-        $query = "SHOW COLUMNS FROM ".$table;
+    function printForm($table, $script = ""){
+        $query = "SHOW COLUMNS FROM $table";
         $champs = $this->bddQuery($query);
         echo "<table>";
         $val = 0;
         while($champs && $champ = $champs->fetch_assoc()){
-            $query = "SELECT DISTINCT ".$champ["Field"]." FROM ".$table;
+            $query = "SELECT DISTINCT $champ[Field] FROM $table";
             $result = $this->bddQuery($query)->fetch_all();
             if($val == 0)
                 echo "<tr>";
 
             if($result) {
-                echo "<td>".$champ["Field"]." <select name = '".$champ['Field']."'>";
+                echo "<td>$champ[Field] <select onchange = '$script' name = '$champ[Field]'>";
+                echo "<option value = '*'>*</option>";
                 foreach ($result as $value) {
-                    echo "<option value = '".$value[0]."'>".$value[0]."</option>";
+                    echo "<option value = '$value[0]'>$value[0]</option>";
                 }
                 echo "</select></td>";
                 $val = ($val + 1)%2;
@@ -84,11 +85,11 @@ class DBRequester {
     }
 
     function listSelect($table, $champ, $name, $script = "", $cond = ""){
-        $query = "SELECT DISTINCT ".$champ." FROM ".$table." ".$cond;
+        $query = "SELECT DISTINCT $champ FROM $table $cond";
         $result = $this->bddQuery($query);
         $ret = "";
         if($result){
-            $ret .= "<select id = \"".$name."\" onchange = '".$script."' name = ".$name."><option></option>";
+            $ret .= "<select id = \"$name\" onchange = '$script' name = '$name'><option></option>";
             while($champ = $result->fetch_row()){
                 $ret .= "<option>";
                 foreach($champ as $val)
@@ -112,7 +113,7 @@ class DBRequester {
         $ret = "";
         if($result){
             while($champ = $result->fetch_row())
-                $ret .= "<input onclick = \" $script \" type = checkbox  name=\" $name\" value=\" $champ[0] \">$champ[0]</input>";
+                $ret .= "<input onclick = \" $script \" type = checkbox  name=\" $name\" value=\"$champ[0]\">$champ[0]</input>";
         }
         return $ret;
     }
@@ -177,19 +178,18 @@ class DBRequester {
     }
 
     function suggestionsSelect($id_ami){
-        $query =
-        "(SELECT id_jeu
+        $query = "(SELECT id_jeu
         FROM Jeu_Video
         WHERE id_jeu IN ((SELECT id_jeu
                          FROM Jeu_Video
                          WHERE id_jeu NOT IN (SELECT id_jeu
                                              FROM Pret
-                                             WHERE id_ami = ".$id_ami.")))
+                                             WHERE id_ami = $id_ami)))
         AND id_jeu IN ((SELECT id_jeu
                        FROM Jeu_Video
                        WHERE style IN (SELECT style
                                       FROM Pret NATURAL JOIN Jeu_Video
-                                      WHERE id_ami = ".$id_ami.")))
+                                      WHERE id_ami = $id_ami)))
         AND id_jeu IN ((SELECT id_jeu
                        FROM Jeu_Video NATURAL JOIN Exemplaire
                        WHERE id_exemplaire NOT IN (SELECT id_exemplaire
@@ -199,7 +199,7 @@ class DBRequester {
                        FROM Jeu_Video NATURAL JOIN Exemplaire
                        WHERE id_plateforme IN (SELECT id_plateforme
                                               FROM Pret NATURAL JOIN Exemplaire
-                                              WHERE id_ami = ".$id_ami.")))
+                                              WHERE id_ami = $id_ami)))
         ORDER BY note DESC
         LIMIT 0,4)";
 
@@ -209,7 +209,7 @@ class DBRequester {
     }
 
     function amiSelect($nom, $prenom){
-        $query = "SELECT id_ami FROM Ami WHERE nom = \"$nom\" AND prenom = \"$prenom\"";
+        $query = "SELECT id_ami FROM Ami WHERE nom = \"$nom\" AND prenom = \"$prenom\" ";
         $result = $this->bddQuery($query);
         $id = NULL;
         if($result){
@@ -254,12 +254,14 @@ if(isset($_GET['action'])){
     switch(htmlspecialchars($_GET['action'])){
         case 0:
             if(isset($_GET['table']))
-                $bdd->printForm(htmlspecialchars($_GET['table']));
+                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));
             else
                 echo "Bad request";
             break;
         case 1:
-            if(isset($_GET['table']))
+            if(isset($_GET['table']) && isset($_GET['cond']))
+                $bdd->printTable(htmlspecialchars($_GET['table']), "WHERE ".htmlspecialchars($_GET['cond']));
+            else if(isset($_GET['table']))
                 $bdd->printTable(htmlspecialchars($_GET['table']));
             else
                 echo "Bad request";
@@ -283,7 +285,7 @@ if(isset($_GET['action'])){
             if (isset($_GET['name'])) {
                 $nom = explode(" ", $_GET["name"], 2);
                 $id = $bdd->amiSelect($nom[1], $nom[0]);
-                $bdd->printTable(NULL, 0, 4, "*", false, $bdd->suggestionsSelect($id));
+                $bdd->printTable(NULL, "",0, 4, "*", false, $bdd->suggestionsSelect($id));
             }
             break;
         default:

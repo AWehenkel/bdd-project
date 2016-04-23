@@ -27,7 +27,7 @@ if(isset($_GET["disconnect"])){
         if(val == "")
             return;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "db_requester.php?action=2&table=jeu_video&champ=id_jeu&name=id_jeu&script=select_jeu(this.value)&cond=WHERE style = '"+val+"'", true);
+        xhttp.open("GET", "DBRequester.php?action=2&table=jeu_video&champ=id_jeu&name=id_jeu&script=select_jeu(this.value)&cond=WHERE style = '"+val+"'", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -45,7 +45,7 @@ if(isset($_GET["disconnect"])){
         if(val == "")
             return;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "db_requester.php?action=2&table=plateforme_du_jeu&champ=id_plateforme&name=id_plateforme&script=select_support(this.value)&cond=WHERE id_jeu = '"+val+"'", true);
+        xhttp.open("GET", "DBRequester.php?action=2&table=plateforme_du_jeu&champ=id_plateforme&name=id_plateforme&script=select_support(this.value)&cond=WHERE id_jeu = '"+val+"'", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -64,7 +64,7 @@ if(isset($_GET["disconnect"])){
             return;
         get_phys();
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "db_requester.php?action=3&table=emule&champ=id_plateforme&value="+val+"", true);
+        xhttp.open("GET", "DBRequester.php?action=3&table=emule&champ=id_plateforme&value="+val+"", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -88,7 +88,7 @@ if(isset($_GET["disconnect"])){
             return;
         }
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "db_requester.php?action=4&table=emule&champ=id_emulateur&script=&name=id_emulateur&cond=WHERE id_plateforme = '"+val+"'", true);
+        xhttp.open("GET", "DBRequester.php?action=4&table=emule&champ=id_emulateur&script=&name=id_emulateur&cond=WHERE id_plateforme = '"+val+"'", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {

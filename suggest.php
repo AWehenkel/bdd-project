@@ -25,7 +25,7 @@ if(isset($_GET["disconnect"])){
         if(value == "")
             return;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "db_requester.php?action=5&name="+value, true);
+        xhttp.open("GET", "DBRequester.php?action=5&name="+value, true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
