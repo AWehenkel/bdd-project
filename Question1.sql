@@ -1,3 +1,6 @@
+/* Scripts SQL permettant de répondre à la première question */
+
+/* Scripts SQL permettant la création de la base de données */
 
 Create table if not exists Plateforme(
 	id_plateforme int primary key,
@@ -107,6 +110,14 @@ create table if not exists Pret(
 	Foreign key (id_exemplaire) references Exemplaire(id_exemplaire)	
 )ENGINE=INNODB;
 
+create table if not exists users(
+	id varchar(20) NOT NULL,
+	password varchar(20) NOT NULL
+)ENGINE=INNODB;
+
+
+/* Scripts SQL permettant l'initialisation de la base de données */
+
 LOAD DATA LOCAL INFILE 'C:\plateforme.csv'
 INTO TABLE Plateforme
 FIELDS TERMINATED BY ','
@@ -190,3 +201,5 @@ INTO TABLE Pret
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 (id_ami, id_jeu, id_exemplaire, date_emprunt, date_retour);
+
+INSERT INTO users(id, password) VALUES ('antoine', 'password');
