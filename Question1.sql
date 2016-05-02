@@ -1,113 +1,113 @@
-/* Scripts SQL permettant de répondre à la première question */
+/* Scripts SQL permettant la creation de la base de donnees. */
 
-/* Scripts SQL permettant la création de la base de données */
-
-Create table if not exists Plateforme(
+Create table if not exists plateforme(
 	id_plateforme int primary key,
 	nom varchar(20) not null,
 	version int not null,
 	bits int not null
 	)ENGINE=INNODB;
-	
-create table if not exists Console(
+
+create table if not exists console(
 	id_plateforme int primary key,
-	Foreign key (id_plateforme) references Plateforme(id_plateforme)
+	Foreign key (id_plateforme) references plateforme(id_plateforme)
 )ENGINE=INNODB;
 
-create table if not exists Systeme(
+create table if not exists systeme(
 	id_plateforme int primary key,
-	Foreign key (id_plateforme) references Plateforme(id_plateforme)
+	Foreign key (id_plateforme) references plateforme(id_plateforme)
 )ENGINE=INNODB;
 
-create table if not exists Emulateur(
+create table if not exists emulateur(
 	id_emulateur int primary key,
 	nom varchar(20) not null,
 	version int not null
 )ENGINE=INNODB;
 
-create table if not exists Ami(
+create table if not exists ami(
 	id_ami int primary key,
 	nom varchar(20) not null,
 	prenom varchar(20) not null,
 	n_tel varchar(9) not null
 )ENGINE=INNODB;
 
-create table if not exists Jeu_Video(
+create table if not exists jeu_video(
 	id_jeu int primary key,
 	style varchar(20) not null,
 	note int not null
 )ENGINE=INNODB;
 
-create table if not exists Exemplaire(
+create table if not exists exemplaire(
 	id_jeu int not null,
 	id_exemplaire int not null,
 	id_plateforme int not null,
 	primary key(id_jeu, id_exemplaire),
-	Foreign key (id_jeu) references Jeu_Video(id_jeu),
-	Foreign key (id_plateforme) references Plateforme(id_plateforme)
+	Foreign key (id_jeu) references jeu_video(id_jeu),
+	Foreign key (id_plateforme) references plateforme(id_plateforme)
 )ENGINE=INNODB;
 
-create table if not exists Exemplaire_Physique(
+ALTER TABLE `exemplaire` ADD KEY `id_exemplaire` (`id_exemplaire`);
+
+create table if not exists exemplaire_physique(
 	id_jeu int not null,
 	id_exemplaire int not null,
 	etat int not null,
 	emballage boolean not null,
 	livret boolean not null,
 	primary key(id_jeu, id_exemplaire),
-	Foreign key (id_jeu) references Jeu_Video(id_jeu)
+	Foreign key (id_jeu) references jeu_video(id_jeu)
 )ENGINE=INNODB;
 
-create table if not exists Exemplaire_Virtuel(
+create table if not exists exemplaire_virtuel(
 	id_jeu int not null,
-	id_exemplaire int not null,	
+	id_exemplaire int not null,
 	taille int not null,
 	primary key(id_jeu, id_exemplaire),
-	Foreign key (id_jeu) references Jeu_Video(id_jeu)
+	Foreign key (id_jeu) references jeu_video(id_jeu)
 )ENGINE=INNODB;
 
 create table if not exists plateforme_du_jeu(
 	id_jeu int not null,
 	id_plateforme int not null,
 	primary key(id_jeu, id_plateforme),
-	Foreign key (id_plateforme) references Plateforme(id_plateforme),
-	Foreign key (id_jeu) references Jeu_Video(id_jeu)
+	Foreign key (id_plateforme) references plateforme(id_plateforme),
+	Foreign key (id_jeu) references jeu_video(id_jeu)
 )ENGINE=INNODB;
 
-create table if not exists Peut_Emuler(
+create table if not exists peut_emuler(
 	id_jeu int not null,
 	id_exemplaire int not null,
 	id_emulateur int not null,
 	primary key(id_jeu, id_exemplaire, id_emulateur),
-	Foreign key (id_jeu) references Jeu_Video(id_jeu),
-	Foreign key (id_exemplaire) references Exemplaire(id_exemplaire),
-	Foreign key (id_emulateur) references Emulateur(id_emulateur)		
+	Foreign key (id_jeu) references jeu_video(id_jeu),
+	Foreign key (id_exemplaire) references exemplaire(id_exemplaire),
+	Foreign key (id_emulateur) references emulateur(id_emulateur)
 )ENGINE=INNODB;
 
-create table if not exists Emulateur_Fonctionne_Sur(
+create table if not exists emulateur_fonctionne_sur(
 	id_plateforme int not null,
 	id_emulateur int not null,
 	primary key(id_emulateur, id_plateforme),
-	Foreign key (id_plateforme) references Plateforme(id_plateforme),
-	Foreign key (id_emulateur) references Emulateur(id_emulateur)		
+	Foreign key (id_plateforme) references plateforme(id_plateforme),
+	Foreign key (id_emulateur) references emulateur(id_emulateur)
 )ENGINE=INNODB;
 
-create table if not exists Emule(
+create table if not exists emule(
 	id_emulateur int not null,
 	id_plateforme int not null,
 	primary key(id_emulateur, id_plateforme),
-	Foreign key (id_plateforme) references Plateforme(id_plateforme),
-	Foreign key (id_emulateur) references Emulateur(id_emulateur)		
+	Foreign key (id_plateforme) references plateforme(id_plateforme),
+	Foreign key (id_emulateur) references emulateur(id_emulateur)
 )ENGINE=INNODB;
 
-create table if not exists Pret(
+create table if not exists pret(
 	id_ami int not null,
 	id_jeu int not null,
 	id_exemplaire int not null,
-	date_emprunt date not null,
-	date_retour date not null,
+	date_emprunt varchar(10) not null,
+	date_retour varchar(10) null,
 	primary key(id_jeu, id_exemplaire, date_emprunt),
-	Foreign key (id_jeu) references Jeu_Video(id_jeu),
-	Foreign key (id_exemplaire) references Exemplaire(id_exemplaire)	
+	Foreign key (id_jeu) references jeu_video(id_jeu),
+	Foreign key (id_exemplaire) references exemplaire(id_exemplaire)
 )ENGINE=INNODB;
 
 create table if not exists users(
@@ -116,90 +116,9 @@ create table if not exists users(
 )ENGINE=INNODB;
 
 
-/* Scripts SQL permettant l'initialisation de la base de données */
-
-LOAD DATA LOCAL INFILE 'C:\plateforme.csv'
-INTO TABLE Plateforme
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_plateforme, nom, version, bits);
-
-LOAD DATA LOCAL INFILE 'C:\Console.csv'
-INTO TABLE Console
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_plateforme);
-
-LOAD DATA LOCAL INFILE 'C:\Systeme.csv'
-INTO TABLE Systeme
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_plateforme);
-
-LOAD DATA LOCAL INFILE 'C:\Emulateur.csv'
-INTO TABLE Emulateur
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_emulateur, nom, version);
-
-LOAD DATA LOCAL INFILE 'C:\Ami.csv'
-INTO TABLE Ami
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_ami, nom, prenom, n_tel);
-
-LOAD DATA LOCAL INFILE 'C:\Jeu_Video.csv'
-INTO TABLE Jeu_Video
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_jeu, style, note);
-
-LOAD DATA LOCAL INFILE 'C:\Exemplaire.csv'
-INTO TABLE Exemplaire
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_jeu, id_exemplaire, id_plateforme);
-
-LOAD DATA LOCAL INFILE 'C:\Exemplaire_Physique.csv'
-INTO TABLE Exemplaire_Physique
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_jeu, id_exemplaire, etat, emballage, livret);
-
-LOAD DATA LOCAL INFILE 'C:\Exemplaire_Virtuel.csv'
-INTO TABLE Exemplaire_Virtuel
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_jeu, id_exemplaire, taille);
-
-LOAD DATA LOCAL INFILE 'C:\Plateforme_Jeu.csv'
-INTO TABLE plateforme_du_jeu
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_jeu, id_plateforme);
-
-LOAD DATA LOCAL INFILE 'C:\Peut_Emuler.csv'
-INTO TABLE Peut_Emuler
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_jeu, id_exemplaire, id_emulateur);
-
-LOAD DATA LOCAL INFILE 'C:\Emulateur_Fonctionne_Sur.csv'
-INTO TABLE Emulateur_Fonctionne_Sur
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_plateforme, id_emulateur);
-
-LOAD DATA LOCAL INFILE 'C:\Emule.csv'
-INTO TABLE Emule
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_emulateur, id_plateforme);
-
-LOAD DATA LOCAL INFILE 'C:\Pret.csv'
-INTO TABLE Pret
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-(id_ami, id_jeu, id_exemplaire, date_emprunt, date_retour);
+/* Scripts SQL permettant d'initialiser la base de donnees. */
 
 INSERT INTO users(id, password) VALUES ('antoine', 'password');
+INSERT INTO users(id, password) VALUES ('group8', 'IR5ovtPs');
+
+/* En ce qui concerne l'importation du fichier data.csv: voir rapport. */
