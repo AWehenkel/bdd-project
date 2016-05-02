@@ -39,7 +39,7 @@ class DBRequester {
         else
             $result = $noQueryResult;
         if($result){
-            $i = true;
+            $i = true;            
             while($champs = $result->fetch_assoc()){
                 if($i){
                     echo "<table class = 'result_table'><tr>";
@@ -55,7 +55,7 @@ class DBRequester {
             }
             echo "</table>";
         }
-        else
+        else 
             echo "Pas de resultats trouvés dans la base de données";
 
     }
@@ -86,7 +86,7 @@ class DBRequester {
                 }
                 if($val == 0)
                     echo "</tr>";
-            }
+                }
         }
         echo "</table>";
 
@@ -132,15 +132,15 @@ class DBRequester {
         if($result && $result = $result->fetch_row())
             $id_exemplaire = $result[0] + 1;
         else
-            $id_exemplaire = 0;
+            $id_exemplaire = 0;        
         $query = "INSERT INTO exemplaire VALUES($id_jeu,$id_exemplaire, $id_plateforme)";
         $this->bddQuery($query);
-        $query = "INSERT INTO exemplaire_virtuel VALUES($id_jeu,$id_exemplaire, $taille)";
+        $query = "INSERT INTO exemplairevirtuel VALUES($id_jeu,$id_exemplaire, $taille)";
 
         $this->bddQuery($query);
         foreach($ids_emulateur as $id_em){
             echo $id_em;
-            $query = "INSERT INTO peut_emuler VALUES($id_jeu,$id_exemplaire, $id_em)";
+            $query = "INSERT INTO peutemuler VALUES($id_jeu,$id_exemplaire, $id_em)";
             echo $query;
             $this->bddQuery($query);
         }
@@ -161,7 +161,7 @@ class DBRequester {
             $emb = 1;
         $query = "INSERT INTO exemplaire VALUES($id_jeu,$id_exemplaire, $id_plateforme)";
         $this->bddQuery($query);
-        $query = "INSERT INTO exemplaire_physique VALUES($id_jeu,$id_exemplaire, $state,$emb, $liv)";
+        $query = "INSERT INTO exemplairephysique VALUES($id_jeu,$id_exemplaire, $state,$emb, $liv)";
         $this->bddQuery($query);
     }
 
@@ -170,46 +170,44 @@ class DBRequester {
             "(SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
        FROM
           (SELECT id_emulateur, COUNT(id_exemplaire) AS nbreVirtuel
-          FROM PeutEmuler
+          FROM peutemuler
           GROUP BY id_emulateur
           ) AS T1
           NATURAL JOIN
           (SELECT id_emulateur,COUNT(id_exemplaire) AS nbreVirtuel_Total
            FROM
-              Emule
+              emule
               NATURAL JOIN
               (SELECT id_plateforme, id_exemplaire
                   FROM
-                    Exemplaire
+                    exemplaire
                     NATURAL JOIN
                     (SELECT id_jeu, id_exemplaire
-                      FROM ExemplaireVirtuel) AS T2
+                      FROM exemplairevirtuel) AS T2
                     ) AS T2
            GROUP BY id_emulateur
          ) AS T2
         ORDER BY performance DESC
       )";
         $result = $this->bddQuery($query);
-        if($result)
-            echo $query;
         return $result;
     }
 
     function suggestionsSelect($id_ami){
         $query = "(SELECT id_jeu, style, note
-         FROM JeuVideo
+         FROM jeuvideo
          WHERE id_jeu NOT IN (SELECT id_jeu
-                              FROM Pret
+                              FROM pret
                               WHERE id_ami = $id_ami)
 
          AND style IN (SELECT style
-                       FROM Pret NATURAL JOIN JeuVideo
+                       FROM pret NATURAL JOIN jeuvideo
                        WHERE id_ami = $id_ami)
 
          AND id_jeu IN (SELECT id_jeu
-                        FROM Exemplaire NATURAL JOIN ExemplairePhysique
+                        FROM exemplaire NATURAL JOIN exemplairephysique
                         WHERE id_plateforme IN (SELECT id_plateforme
-                                                FROM Pret NATURAL JOIN Exemplaire
+                                                FROM pret NATURAL JOIN exemplaire
                                                 WHERE id_ami = $id_ami))
 
          ORDER BY note DESC
@@ -233,23 +231,21 @@ class DBRequester {
     function getFonctionnel(){
         $query =
             "(SELECT style, COUNT(id_exemplaire) AS fonctionnel
-             FROM JeuVideo
+             FROM jeuvideo
              NATURAL JOIN
              ((SELECT id_jeu, id_exemplaire
-               FROM ExemplairePhysique
+               FROM exemplairephysique
                WHERE etat > 1)
 
                UNION
 
               (SELECT id_jeu, id_exemplaire
-               FROM PeutEmuler NATURAL JOIN (SELECT DISTINCT id_emulateur
-                                               FROM EmulateurFonctionneSur) AS T2)
+               FROM peutemuler NATURAL JOIN (SELECT DISTINCT id_emulateur
+                                               FROM emulateurfonctionnesur) AS T2)
                ) AS T2
              GROUP BY style
             )";
         $result = $this->bddQuery($query);
-        if($result)
-            echo $query;
         return $result;
     }
 }
@@ -257,18 +253,17 @@ class DBRequester {
 if(isset($_GET['action'])){
     $bdd = new DBRequester();
     //foreach($_GET as $val)
-    // echo $val." ";
+       // echo $val." ";
     switch(htmlspecialchars($_GET['action'])){
         case 0:
-            if(isset($_GET['table']))
-                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));
+            if(isset($_GET['table'])){
+                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));}
             else
                 echo "Bad request";
             break;
         case 1:
-            if(isset($_GET['table']) && isset($_GET['cond']) && $_GET['cond'] != "") {
-                $bdd->printTable(htmlspecialchars($_GET['table']), "WHERE " . htmlspecialchars($_GET['cond']));
-            }
+            if(isset($_GET['table']) && isset($_GET['cond']) && !empty($_GET['cond']))
+                $bdd->printTable(htmlspecialchars($_GET['table']), "WHERE ".htmlspecialchars($_GET['cond']));
             else if(isset($_GET['table']))
                 $bdd->printTable(htmlspecialchars($_GET['table']));
             else
@@ -296,6 +291,7 @@ if(isset($_GET['action'])){
                 $bdd->printTable(NULL, "", "*", false, $bdd->suggestionsSelect($id));
             }
             break;
+        default:
             echo "pas cool";
     }
 }

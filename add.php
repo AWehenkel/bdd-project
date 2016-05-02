@@ -20,7 +20,7 @@ include("header.php");
         if(val == "")
             return;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "DBRequester.php?action=2&table=JeuVideo&champ=id_jeu&name=id_jeu&script=select_jeu(this.value)&cond=WHERE style = '"+val+"'", true);
+        xhttp.open("GET", "DBRequester.php?action=2&table=jeuvideo&champ=id_jeu&name=id_jeu&script=select_jeu(this.value)&cond=WHERE style = '"+val+"'", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -38,7 +38,7 @@ include("header.php");
         if(val == "")
             return;
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "DBRequester.php?action=2&table=PlateformeJeu&champ=id_plateforme&name=id_plateforme&script=select_support(this.value)&cond=WHERE id_jeu = '"+val+"'", true);
+        xhttp.open("GET", "DBRequester.php?action=2&table=plateformejeu&champ=id_plateforme&name=id_plateforme&script=select_support(this.value)&cond=WHERE id_jeu = '"+val+"'", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -57,7 +57,7 @@ include("header.php");
             return;
         get_phys();
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "DBRequester.php?action=3&table=Emule&champ=id_plateforme&value="+val+"", true);
+        xhttp.open("GET", "DBRequester.php?action=3&table=emule&champ=id_plateforme&value="+val+"", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -81,7 +81,7 @@ include("header.php");
             return;
         }
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "DBRequester.php?action=4&table=Emule&champ=id_emulateur&script=&name=id_emulateur&cond=WHERE id_plateforme = '"+val+"'", true);
+        xhttp.open("GET", "DBRequester.php?action=4&table=emule&champ=id_emulateur&script=&name=id_emulateur&cond=WHERE id_plateforme = '"+val+"'", true);
         xhttp.send(null);
         xhttp.onreadystatechange = function() {
             if (xhttp.readyState == 4 && (xhttp.status == 200 || xhttp.status == 0)) {
@@ -114,7 +114,7 @@ if(isset($_POST["id_jeu"]) && isset($_POST["id_plateforme"]) && isset($_POST["ph
         <h2>Ajout d'un exemplaire</h2>
         <form action = "add.php" method = "post" >
             <br/><label for = "table_name" >Selectionnez le type de jeu </label>
-            <?php echo $bdd->listSelect("JeuVideo", "style", "type", "select_style(this.value);"); ?>
+            <?php echo $bdd->listSelect("jeuvideo", "style", "type", "select_style(this.value);"); ?>
             <span id = "id_jeu_select"></span>
             <span id = "id_plateforme_select"></span>
             <span id = "physical_virtual"></span>

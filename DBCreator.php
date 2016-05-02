@@ -11,7 +11,7 @@ class DBCreator {
     function dataInsertion(){
         $nbquery = -1; // compteur de ligne
 
-        $fic = @fopen("data.csv", "r");
+        $fic = fopen("data.csv", "r");
         $regex = "/:/";
         while(($tab = fgetcsv($fic,1000000,',')))
         {
@@ -49,37 +49,32 @@ class DBCreator {
         fclose($fic);
         $bdd = new DBRequester();
         for($i = 0; $i <= $nbquery; $i++)
-            $bdd->bddQuery("INSERT INTO $table[$i] $query[$i] VALUES $values[$i]");
+            $bdd->bddQuery("INSERT INTO ". strtolower($table[$i])." $query[$i] VALUES $values[$i]");
+        $bdd->bddQuery("INSERT INTO users(id, password) VALUES ('group8', 'IR5ovtPs')");
+
 
     }
 
     function tableCreation(){
-        $fic = @fopen("DBStructure", "r");
+        $fic = fopen("DBStructure", "r");
         $query = "";
         $bdd = new DBRequester();
         while($line = fgets($fic)){
             $query .= $line;
             if(preg_match("/;/", $line)){
-                $bdd->bddQuery($query);
+                $bdd->bddQuery(strtolower($query));
                 $query = "";
             }
         }
         fclose($fic);
 
     }
-
-    function eraseTable(){
-        $query = "DROP TABLE emulateur_fonctionne_sur";
-        $bdd = new DBRequester();
-        $bdd->bddQuery($query);
-        echo "oo";
-    }
 }
 
 $ob = new DBCreator();
-$ob->eraseTable();
 $ob->tableCreation();
 $ob->dataInsertion();
+echo 't';
 
 
 ?>
