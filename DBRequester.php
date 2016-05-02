@@ -170,54 +170,50 @@ class DBRequester {
             "(SELECT id_emulateur , nbreVirtuel/nbreVirtuel_Total AS performance
        FROM
           (SELECT id_emulateur, COUNT(id_exemplaire) AS nbreVirtuel
-          FROM peut_emuler
+          FROM PeutEmuler
           GROUP BY id_emulateur
           ) AS T1
           NATURAL JOIN
           (SELECT id_emulateur,COUNT(id_exemplaire) AS nbreVirtuel_Total
            FROM
-              emule #(id_emulateur, id_plateforme)
+              Emule
               NATURAL JOIN
               (SELECT id_plateforme, id_exemplaire
                   FROM
-                    plateforme_du_jeu #(id_jeu, id_plateforme)
+                    Exemplaire
                     NATURAL JOIN
                     (SELECT id_jeu, id_exemplaire
-                      FROM exemplaire_virtuel) AS T2
+                      FROM ExemplaireVirtuel) AS T2
                     ) AS T2
            GROUP BY id_emulateur
          ) AS T2
         ORDER BY performance DESC
       )";
         $result = $this->bddQuery($query);
+        if($result)
+            echo $query;
         return $result;
     }
 
     function suggestionsSelect($id_ami){
-        $query = "(SELECT id_jeu
-            FROM jeu_video
-            WHERE id_jeu IN ((SELECT id_jeu
-                             FROM jeu_video
-                             WHERE id_jeu NOT IN (SELECT id_jeu
-                                                 FROM pret
-                                                 WHERE id_ami = $id_ami)))
-            AND id_jeu IN ((SELECT id_jeu
-                           FROM jeu_video
-                           WHERE style IN (SELECT style
-                                          FROM pret NATURAL JOIN jeu_video
-                                          WHERE id_ami = $id_ami)))
-            AND id_jeu IN ((SELECT id_jeu
-                           FROM jeu_video NATURAL JOIN exemplaire
-                           WHERE id_exemplaire NOT IN (SELECT id_exemplaire
-                                                       FROM pret
-                                                       WHERE date_retour = null)))
-            AND id_jeu IN ((SELECT id_jeu
-                           FROM jeu_video NATURAL JOIN exemplaire
-                           WHERE id_plateforme IN (SELECT id_plateforme
-                                                  FROM pret NATURAL JOIN exemplaire
-                                                  WHERE id_ami = $id_ami)))
-            ORDER BY note DESC
-            LIMIT 0,5)";
+        $query = "(SELECT id_jeu, style, note
+         FROM JeuVideo
+         WHERE id_jeu NOT IN (SELECT id_jeu
+                              FROM Pret
+                              WHERE id_ami = $id_ami)
+
+         AND style IN (SELECT style
+                       FROM Pret NATURAL JOIN JeuVideo
+                       WHERE id_ami = $id_ami)
+
+         AND id_jeu IN (SELECT id_jeu
+                        FROM Exemplaire NATURAL JOIN ExemplairePhysique
+                        WHERE id_plateforme IN (SELECT id_plateforme
+                                                FROM Pret NATURAL JOIN Exemplaire
+                                                WHERE id_ami = $id_ami))
+
+         ORDER BY note DESC
+         LIMIT 5)";
 
         $result = $this->bddQuery($query);
         return $result;
@@ -236,27 +232,24 @@ class DBRequester {
 
     function getFonctionnel(){
         $query =
-            "(SELECT style, COUNT(exemplaire_fonctionnel) AS fonctionnel
-             FROM jeu_video
+            "(SELECT style, COUNT(id_exemplaire) AS fonctionnel
+             FROM JeuVideo
              NATURAL JOIN
-                  (SELECT id_jeu, COUNT(fonct) AS exemplaire_fonctionnel
-                   FROM
-                        ((SELECT id_jeu, COUNT(id_exemplaire) AS fonct
-                          FROM exemplaire_physique
-                          WHERE etat > 1
-                          GROUP BY id_jeu)
+             ((SELECT id_jeu, id_exemplaire
+               FROM ExemplairePhysique
+               WHERE etat > 1)
 
-                          UNION
+               UNION
 
-                         (SELECT id_jeu, COUNT(id_exemplaire) AS fonct
-                          FROM exemplaire_virtuel
-                          WHERE id_exemplaire IN (SELECT id_exemplaire
-                                                  FROM peut_emuler NATURAL JOIN emulateur_fonctionne_sur)
-                          GROUP BY id_jeu)) AS T1
-                  GROUP BY id_jeu) AS T2
+              (SELECT id_jeu, id_exemplaire
+               FROM PeutEmuler NATURAL JOIN (SELECT DISTINCT id_emulateur
+                                               FROM EmulateurFonctionneSur) AS T2)
+               ) AS T2
              GROUP BY style
             )";
         $result = $this->bddQuery($query);
+        if($result)
+            echo $query;
         return $result;
     }
 }
@@ -267,14 +260,15 @@ if(isset($_GET['action'])){
     // echo $val." ";
     switch(htmlspecialchars($_GET['action'])){
         case 0:
-            if(isset($_GET['table'])){
-                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));}
+            if(isset($_GET['table']))
+                $bdd->printForm(htmlspecialchars($_GET['table']), htmlspecialchars($_GET['script']));
             else
                 echo "Bad request";
             break;
         case 1:
-            if(isset($_GET['table']) && isset($_GET['cond']) && !empty($_GET['cond']))
-                $bdd->printTable(htmlspecialchars($_GET['table']), "WHERE ".htmlspecialchars($_GET['cond']));
+            if(isset($_GET['table']) && isset($_GET['cond']) && $_GET['cond'] != "") {
+                $bdd->printTable(htmlspecialchars($_GET['table']), "WHERE " . htmlspecialchars($_GET['cond']));
+            }
             else if(isset($_GET['table']))
                 $bdd->printTable(htmlspecialchars($_GET['table']));
             else
@@ -297,12 +291,11 @@ if(isset($_GET['action'])){
             break;
         case 5:
             if (isset($_GET['name'])) {
-                $nom = explode(" ", $_GET["name"], 2);
-                $id = $bdd->amiSelect($nom[1], $nom[0]);
+                $nom = explode(" ", $_GET["name"], 3);
+                $id = $nom[0];
                 $bdd->printTable(NULL, "", "*", false, $bdd->suggestionsSelect($id));
             }
             break;
-        default:
             echo "pas cool";
     }
 }

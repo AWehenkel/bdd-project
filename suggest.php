@@ -36,7 +36,7 @@ $bdd = new DBRequester();
     <div class = "menu-selection">
         <h2>Suggestion pour un ami</h2>
         <br/><label for = "table_name" >Selectionnez l'ami </label>
-        <?php echo  $bdd->listSelect("ami", "prenom, nom", "type", "select_ami(this.value);"); ?>
+        <?php echo  $bdd->listSelect("ami", "id_ami, prenom, nom", "type", "select_ami(this.value);"); ?>
 
     </div>
 
